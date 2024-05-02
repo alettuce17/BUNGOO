@@ -58,15 +58,16 @@ public class Bungo {
     }
 
 
-    public void markNumber(int value) {
+    public boolean markNumber(int value) {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 if (card[i][j] != null && card[i][j].getValue() == value) {
                     card[i][j].setMarked(true);
-                    return;
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     private String generatePadding(int numberOfSpaces) {
@@ -132,45 +133,32 @@ public class Bungo {
         // Number not found on the card
         return false;
     }
-    public boolean hasBingo() {
-        // Check rows
-        for (int row = 0; row < 5; row++) {
-            boolean bingo = true;
-            for (int col = 0; col < 5; col++) {
-                if (!card[row][col].isMarked()) {
-                    bingo = false;
-                    break;
-                }
-            }
-            if (bingo) return true;
+    public boolean hasBingo(Patterns pattern) {
+        if (pattern == null) {
+            return false; // Handle null pattern
         }
 
-        // Check columns
-        for (int col = 0; col < 5; col++) {
-            boolean bingo = true;
-            for (int row = 0; row < 5; row++) {
-                if (!card[row][col].isMarked()) {
-                    bingo = false;
-                    break;
-                }
-            }
-            if (bingo) return true;
-        }
+        boolean[][] patternMatrix = pattern.getPatternMatrix();
 
-        // Check diagonals
-        boolean diagonal1Bingo = true;
-        boolean diagonal2Bingo = true;
+        // Check if the pattern matches marked numbers on the card
         for (int i = 0; i < 5; i++) {
-            if (!card[i][i].isMarked()) {
-                diagonal1Bingo = false;
-            }
-            if (!card[i][4 - i].isMarked()) {
-                diagonal2Bingo = false;
+            for (int j = 0; j < 5; j++) {
+                // Skip the FREE cell
+                if (i == 2 && j == 2) {
+                    continue;
+                }
+
+                // Mismatch found
+                if (patternMatrix[i][j] && !card[i][j].isMarked()) {
+                    return false;
+                }
             }
         }
-        if (diagonal1Bingo || diagonal2Bingo) return true;
 
-        return false;
+        // If we made it here, the pattern matches
+        return true;
     }
+
+
 
 }
