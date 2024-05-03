@@ -4,15 +4,14 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        try {
+        do {
             Patterns[] patterns = null;
 
             // Print the main menu
             printMainMenu();
 
             // Get user's choice
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            int choice = getUserChoice(scanner);
 
             // Initialize patterns based on user's choice
             switch (choice) {
@@ -34,23 +33,50 @@ public class Main {
                 case 6:
                     patterns = createAllVerticalPatterns();
                     break;
+                case 7: // OPTION TO QUIT
+                    System.out.println("Exiting game. Goodbye!");
+                    System.exit(0);
                 default:
-                    System.out.println("Invalid choice. Exiting...");
-                    return; // Exit the program gracefully
+                    System.out.println("Invalid choice.");
             }
 
-            BallsQueue ballsQueue = new BallsQueue();
-            System.out.println(ballsQueue); // Print the ballsQueue status to demonstrate how this works
+            if (choice >= 1 && choice <= 6) { // Play game if choice is valid pattern
+                BallsQueue ballsQueue = new BallsQueue();
+                System.out.println(ballsQueue);
+                playBingo(patterns, ballsQueue);
+            }
 
-            // Play the game with selected patterns
-            playBingo(patterns, ballsQueue);
-        } catch (Exception e) {
-            System.err.println("An error occurred: " + e.getMessage());
-            e.printStackTrace(); // Print the stack trace for debugging
-        } finally {
-            scanner.close(); // Close the scanner to prevent resource leak
-        }
+        } while (!askToQuit(scanner)); // Continue playing until the user wants to quit
     }
+
+    private static boolean askToQuit(Scanner scanner) {
+        System.out.print("Do you want to quit (y/n)? ");
+        String input = scanner.nextLine().toLowerCase();
+        return input.equals("y");
+    }
+
+    private static int getUserChoice(Scanner scanner) {
+        int choice = 0;
+        boolean validInput = false;
+        while (!validInput) {
+            try {
+                choice = scanner.nextInt();
+                if (choice < 1 || choice > 7) {
+                    System.out.println("Invalid choice. Please enter a number between 1 and 7.");
+                    System.out.print("Enter your choice: ");
+                } else {
+                    validInput = true;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); // Clear the invalid input
+                System.out.print("Enter your choice: ");
+            }
+        }
+        scanner.nextLine(); // Clear the newline character
+        return choice;
+    }
+
     // Method to print the main menu
     private static void printMainMenu() {
         System.out.println("Welcome to Bingo!");
@@ -61,6 +87,7 @@ public class Main {
         System.out.println("4. Four Corners Pattern");
         System.out.println("5. Horizontal Pattern");
         System.out.println("6. Vertical Pattern");
+        System.out.println("7. Exit");
         System.out.print("Enter your choice: ");
     }
 
@@ -159,6 +186,7 @@ public class Main {
         }
 
         int winnerIndex = -1;
+        Set<String> announcedNumbers = new HashSet<>();
 
         while (winnerIndex == -1) {
             BingoNumber generatedBall = ballsQueue.dequeue(); // Dequeue the next drawn ball
@@ -168,10 +196,17 @@ public class Main {
             for (Patterns pattern : patterns) {
                 for (int i = 0; i < players.length; i++) {
                     boolean hasNumber = players[i].markNumber(generatedBall.getValue());
+                    String message;
                     if (hasNumber) {
-                        System.out.println("Player " + (i + 1) + " has the number " + generatedBall.getValue());
+                        message = "Player " + (i + 1) + " has the number " + generatedBall.getValue();
                     } else {
-                        System.out.println("Player " + (i + 1) + " does not have the number " + generatedBall.getValue());
+                        message = "Player " + (i + 1) + " does not have the number " + generatedBall.getValue();
+                    }
+
+                    // Print the message only if it hasn't been announced before
+                    if (!announcedNumbers.contains(message)) {
+                        announcedNumbers.add(message);
+                        System.out.println(message);
                     }
 
                     if (players[i].hasBingo(pattern)) {
@@ -181,9 +216,12 @@ public class Main {
                 }
                 // If a winner is found with this pattern, break out of the loop
                 if (winnerIndex != -1) {
+                    System.out.println();
+                    System.out.println("Pattern: "+pattern.getName());
                     break;
                 }
             }
+
             ballsQueue.enqueue(generatedBall); // Add the drawn ball back to the queue
 
         }

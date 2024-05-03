@@ -47,7 +47,20 @@ public class Patterns {
         // Create a pattern object with the generated horizontal line
         return new Patterns("Horizontal Row " + (row + 1), patternMatrix);
     }
+    private static Patterns[] createAllVerticalPatterns() {
+        Patterns[] verticalPatterns = new Patterns[5];
 
+        // Create vertical patterns for each column
+        for (int col = 0; col < 5; col++) {
+            boolean[][] patternMatrix = new boolean[5][5];
+            for (int i = 0; i < 5; i++) {
+                patternMatrix[i][col] = true;
+            }
+            verticalPatterns[col] = new Patterns("Vertical Column " + (col + 1), patternMatrix);
+        }
+
+        return verticalPatterns;
+    }
 
 
 
