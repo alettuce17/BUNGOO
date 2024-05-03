@@ -4,45 +4,53 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        Patterns[] patterns = null;
+        try {
+            Patterns[] patterns = null;
 
-        // Print the main menu
-        printMainMenu();
+            // Print the main menu
+            printMainMenu();
 
-        // Get user's choice
-        int choice = scanner.nextInt();
+            // Get user's choice
+            int choice = scanner.nextInt();
+            scanner.nextLine();
 
-        // Initialize patterns based on user's choice
-        switch (choice) {
-            case 1:
-                patterns = new Patterns[]{createDoubleDiagonalPattern()};
-                break;
-            case 2:
-                patterns = new Patterns[]{createBlackoutPattern()};
-                break;
-            case 3:
-                patterns = createBothDiagonalPatterns();
-                break;
-            case 4:
-                patterns = new Patterns[]{createFourCornersPattern()};
-                break;
-            case 5:
-                patterns = createAllHorizontalPatterns();
-                break;
-            case 6:
-                patterns = createAllVerticalPatterns();
-                break;
-            default:
-                System.out.println("Invalid choice. Exiting...");
-                System.exit(0);
+            // Initialize patterns based on user's choice
+            switch (choice) {
+                case 1:
+                    patterns = new Patterns[]{createDoubleDiagonalPattern()};
+                    break;
+                case 2:
+                    patterns = new Patterns[]{createBlackoutPattern()};
+                    break;
+                case 3:
+                    patterns = createBothDiagonalPatterns();
+                    break;
+                case 4:
+                    patterns = new Patterns[]{createFourCornersPattern()};
+                    break;
+                case 5:
+                    patterns = createAllHorizontalPatterns();
+                    break;
+                case 6:
+                    patterns = createAllVerticalPatterns();
+                    break;
+                default:
+                    System.out.println("Invalid choice. Exiting...");
+                    return; // Exit the program gracefully
+            }
+
+            BallsQueue ballsQueue = new BallsQueue();
+            System.out.println(ballsQueue); // Print the ballsQueue status to demonstrate how this works
+
+            // Play the game with selected patterns
+            playBingo(patterns, ballsQueue);
+        } catch (Exception e) {
+            System.err.println("An error occurred: " + e.getMessage());
+            e.printStackTrace(); // Print the stack trace for debugging
+        } finally {
+            scanner.close(); // Close the scanner to prevent resource leak
         }
-        BallsQueue ballsQueue = new BallsQueue();
-        System.out.println(ballsQueue); // Print the ballsQueue status to demonstrate how this works
-
-        // Play the game with selected patterns
-        playBingo(patterns, ballsQueue);
     }
-
     // Method to print the main menu
     private static void printMainMenu() {
         System.out.println("Welcome to Bingo!");
