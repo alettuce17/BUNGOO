@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Random;
 
 
-public class Bungo {
+public class BingoCard {
     private BingoNumber[][] card;
 
-    public Bungo() {
+    public BingoCard() {
         this.card = generateCard();
     }
 

@@ -33,14 +33,17 @@ public class Main {
                 case 6:
                     patterns = createAllVerticalPatterns();
                     break;
-                case 7: // OPTION TO QUIT
+                case 7:
+                    patterns = new Patterns[]{createGPattern()};
+                    break;
+                case 8: // OPTION TO QUIT
                     System.out.println("Exiting game. Goodbye!");
                     System.exit(0);
                 default:
                     System.out.println("Invalid choice.");
             }
 
-            if (choice >= 1 && choice <= 6) { // Play game if choice is valid pattern
+            if (choice >= 1 && choice <= 7) { // Play game if choice is valid pattern
                 BallsQueue ballsQueue = new BallsQueue();
                 System.out.println(ballsQueue);
                 playBingo(patterns, ballsQueue);
@@ -50,8 +53,14 @@ public class Main {
     }
 
     private static boolean askToQuit(Scanner scanner) {
-        System.out.print("Do you want to quit (y/n)? ");
-        String input = scanner.nextLine().toLowerCase();
+        String input;
+        do {
+            System.out.print("Do you want to quit (y/n)? ");
+            input = scanner.nextLine().toLowerCase();
+            if(!input.equalsIgnoreCase("y")&&!input.equalsIgnoreCase("n")){
+                System.out.println("Please enter valid input (y/n)");
+            }
+        }while (!input.equalsIgnoreCase("y")&&!input.equalsIgnoreCase("n"));
         return input.equals("y");
     }
 
@@ -61,7 +70,7 @@ public class Main {
         while (!validInput) {
             try {
                 choice = scanner.nextInt();
-                if (choice < 1 || choice > 7) {
+                if (choice < 1 || choice > 8) {
                     System.out.println("Invalid choice. Please enter a number between 1 and 7.");
                     System.out.print("Enter your choice: ");
                 } else {
@@ -81,13 +90,14 @@ public class Main {
     private static void printMainMenu() {
         System.out.println("Welcome to Bingo!");
         System.out.println("Choose the type of pattern:");
-        System.out.println("1. Double Diagonal Pattern");
+        System.out.println("1. X Pattern");
         System.out.println("2. Blackout Pattern");
         System.out.println("3. Both Diagonal Patterns");
         System.out.println("4. Four Corners Pattern");
         System.out.println("5. Horizontal Pattern");
         System.out.println("6. Vertical Pattern");
-        System.out.println("7. Exit");
+        System.out.println("7. G Pattern");
+        System.out.println("8. Exit");
         System.out.print("Enter your choice: ");
     }
 
@@ -175,13 +185,24 @@ public class Main {
         return new Patterns("Four Corners", fourCornersPattern);
     }
 
+    private static Patterns createGPattern() {
+        boolean[][] gPattern = {
+                {true, true, true, true, true},
+                {true, false, false, false, false},
+                {true, false, true, true, true},
+                {true, false, false, false, true},
+                {true, true, true, true, true}
+        };
+        return new Patterns("G Pattern", gPattern);
+    }
+
     private static void playBingo(Patterns[] patterns, BallsQueue ballsQueue) {
-        Bungo[] players = new Bungo[4];
+        BingoCard[] players = new BingoCard[4];
         List<Integer> losingPlayers = new ArrayList<>(); // Keep track of losing players
 
         // Initialize players
         for (int i = 0; i < players.length; i++) {
-            players[i] = new Bungo();
+            players[i] = new BingoCard();
             players[i].printCard();
         }
 
