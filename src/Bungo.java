@@ -133,6 +133,7 @@ public class Bungo {
         // Number not found on the card
         return false;
     }
+
     public boolean hasBingo(Patterns pattern) {
         if (pattern == null) {
             return false; // Handle null pattern

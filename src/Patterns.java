@@ -32,6 +32,23 @@ public class Patterns {
         return new Patterns(leftDiagonal ? "Left Diagonal" : "Right Diagonal", diagonalPattern);
     }
 
+    private static Patterns createHorizontalPattern() {
+        // Create a boolean matrix to represent the pattern
+        boolean[][] patternMatrix = new boolean[5][5];
+
+        // Select a random row to mark as the horizontal line
+        int row = (int) (Math.random() * 5);
+
+        // Mark all cells in the selected row as true
+        for (int i = 0; i < 5; i++) {
+            patternMatrix[row][i] = true;
+        }
+
+        // Create a pattern object with the generated horizontal line
+        return new Patterns("Horizontal Row " + (row + 1), patternMatrix);
+    }
+
+
 
 
 }
