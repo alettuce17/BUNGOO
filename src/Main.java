@@ -3,10 +3,20 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        BingoCard[] players = new BingoCard[4];
+
+
+        String[] playerNames = {"Player 1", "Player 2", "Player 3", "Player 4"};
+        for (int i = 0; i < players.length; i++) {
+            players[i] = new BingoCard(playerNames[i]);
+        }
 
         do {
             Patterns[] patterns = null;
 
+            for (BingoCard player : players) {
+                player.setCard(player.generateCard());
+            }
             // Print the main menu
             printMainMenu();
 
@@ -36,8 +46,44 @@ public class Main {
                 case 7:
                     patterns = new Patterns[]{createGPattern()};
                     break;
-                case 8: // OPTION TO QUIT
-                    System.out.println("Exiting game. Goodbye!");
+                case 8:
+                    String asciiExit = """
+                                                                   
+                                      ██████████████████                                                                                      
+                                  ████                  ████                                                                                  
+                                ██                          ██                                                                                
+                                ██                          ██                                                                                
+                              ██░░                          ░░▓▓                                                                              
+                          ░░  ██  ░░░░                        ██                                                                              
+                          ░░░░░░░░░░░░░░░░          ▓▓▓▓▓▓    ██                                                                              
+                        ░░░░░░░░░░░░░░░░░░░░        ██████    ██                                                                              
+                            ░░██░░  ░░░░░░    ██    ██████    ██                                                                              
+                              ░░▓▓  ░░      ▓▓████          ▓▓                                                                                
+                              ████  ██                  ██  ████        ████████                      ██  ██                                  
+                              ██    ██████████████████████    ██        ██                            ██  ██                                  
+                              ██      ██  ██  ██  ██  ██      ██        ██  ▓▓▓▓  ▓▓▓▓▓▓  ██▓▓▓▓  ▓▓▓▓██  ██▓▓▓▓  ▓▓  ██  ▓▓▓▓▓▓              
+                              ▒▒████    ██████████████    ████▒▒        ██    ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██              
+                            ▒▒▒▒▒▒▒▒████      ▓▓  ▓▓  ████▒▒▒▒▒▒▒▒      ████████  ██████  ██████  ██████  ██████  ██████  ██████              
+                          ░░▒▒██▒▒▒▒▓▓▓▓██████████████▓▓▓▓▒▒▒▒██▒▒                                                    ██  ██                  
+                            ░░░░██████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒██████  ██      ████████████████████████████████████████  ██████  ██████    ██  ██  ██
+                          ░░░░  ██  ▓▓██████▒▒▒▒▒▒██████    ██  ██▓▓                                                                          
+                          ██      ██▓▓▓▓▓▓    ██    ██    ██      ██░░                                                                        
+                        ██    ████  ████▓▓▓▓▓▓      ██████  ████  ░░░░                                                                        
+                        ██        ██    ██▓▓▓▓▓▓  ████    ██        ░░░░                                                                      
+                        ██          ██  ██    ▓▓▓▓  ██  ██          ██                                                                        
+                          ██      ██    ████████▓▓▓▓▓▓▓▓  ██      ██                                                                          
+                            ▓▓▓▓  ██    ████████████▓▓    ██  ▓▓▓▓                                                                            
+                              ██████    ██████████████    ██████                                                                              
+                              ██████████████████████████████████                                                                              
+                            ██████████████████████████████████████                                                                            
+                            ██████████████████  ██████████████████                                                                            
+                              ██████████████      ██████████████                                                                              
+                          ██████          ██      ██          ██████                                                                          
+                          ██            ████      ████            ██                                                                          
+                            ▓▓▓▓▓▓▓▓▓▓▓▓              ▓▓▓▓▓▓▓▓▓▓▓▓                                                                            
+                      
+                            """;
+                    System.out.println(asciiExit);
                     System.exit(0);
                 default:
                     System.out.println("Invalid choice.");
@@ -46,7 +92,7 @@ public class Main {
             if (choice >= 1 && choice <= 7) { // Play game if choice is valid pattern
                 BallsQueue ballsQueue = new BallsQueue();
                 System.out.println(ballsQueue);
-                playBingo(patterns, ballsQueue);
+                playBingo(patterns, ballsQueue,players);
             }
 
         } while (!askToQuit(scanner)); // Continue playing until the user wants to quit
@@ -55,7 +101,37 @@ public class Main {
     private static boolean askToQuit(Scanner scanner) {
         String input;
         do {
-            System.out.print("Do you want to quit (y/n)? ");
+
+            String human = """
+
+_____________________________________________________________________________________________________________________________________________________________
+                                                                                                                                                            |
+██████╗  ██████╗     ██╗   ██╗ ██████╗ ██╗   ██╗    ██╗    ██╗ █████╗ ███╗   ██╗████████╗    ████████╗ ██████╗      ██████╗ ██╗   ██╗██╗████████╗██████╗    |
+██╔══██╗██╔═══██╗    ╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║    ██║██╔══██╗████╗  ██║╚══██╔══╝    ╚══██╔══╝██╔═══██╗    ██╔═══██╗██║   ██║██║╚══██╔══╝╚════██╗   |
+██║  ██║██║   ██║     ╚████╔╝ ██║   ██║██║   ██║    ██║ █╗ ██║███████║██╔██╗ ██║   ██║          ██║   ██║   ██║    ██║   ██║██║   ██║██║   ██║     ▄███╔╝   |
+██║  ██║██║   ██║      ╚██╔╝  ██║   ██║██║   ██║    ██║███╗██║██╔══██║██║╚██╗██║   ██║          ██║   ██║   ██║    ██║▄▄ ██║██║   ██║██║   ██║     ▀▀══╝    | 
+██████╔╝╚██████╔╝       ██║   ╚██████╔╝╚██████╔╝    ╚███╔███╔╝██║  ██║██║ ╚████║   ██║          ██║   ╚██████╔╝    ╚██████╔╝╚██████╔╝██║   ██║     ██╗      |
+╚═════╝  ╚═════╝        ╚═╝    ╚═════╝  ╚═════╝      ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝          ╚═╝    ╚═════╝      ╚══▀▀═╝  ╚═════╝ ╚═╝   ╚═╝     ╚═╝      |
+                                                                                                                                                            |
+                                                                                                                                                            |
+                                                                                                                                                            |
+                ██╗██╗   ██╗██╗         ██╗   ██╗███████╗███████╗                                                                                           |
+                ██╔╝╚██╗ ██╔╝╚██╗        ╚██╗ ██╔╝██╔════╝██╔════╝                                                                                          | 
+               ██╔╝  ╚████╔╝  ╚██╗        ╚████╔╝ █████╗  ███████╗                                                                                          |
+               ╚██╗   ╚██╔╝   ██╔╝         ╚██╔╝  ██╔══╝  ╚════██║                                                                                          |
+                ╚██╗   ██║   ██╔╝ ██╗       ██║   ███████╗███████║                                                                                          |     
+                 ╚═╝   ╚═╝   ╚═╝  ╚═╝       ╚═╝   ╚══════╝╚══════╝                                                                                          |
+                                                                                                                                                            |
+                 ██╗███╗   ██╗██╗         ███╗   ██╗ ██████╗                                                                                                |
+                ██╔╝████╗  ██║╚██╗        ████╗  ██║██╔═══██╗                                                                                               |
+               ██╔╝ ██╔██╗ ██║ ╚██╗       ██╔██╗ ██║██║   ██║                                                                                               |
+               ╚██╗ ██║╚██╗██║ ██╔╝       ██║╚██╗██║██║   ██║                                                                                               |
+                ╚██╗██║ ╚████║██╔╝ ██╗    ██║ ╚████║╚██████╔╝                                                                                               |
+                 ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝    ╚═╝  ╚═══╝ ╚═════╝                                                                                                |
+____________________________________________________________________________________________________________________________________________________________|                          
+                    """;
+
+            System.out.println(human);
             input = scanner.nextLine().toLowerCase();
             if(!input.equalsIgnoreCase("y")&&!input.equalsIgnoreCase("n")){
                 System.out.println("Please enter valid input (y/n)");
@@ -68,36 +144,59 @@ public class Main {
         int choice = 0;
         boolean validInput = false;
         while (!validInput) {
-            try {
-                choice = scanner.nextInt();
-                if (choice < 1 || choice > 8) {
-                    System.out.println("Invalid choice. Please enter a number between 1 and 7.");
+            if(scanner.hasNextLine()){
+                String strChoice = scanner.nextLine().replaceAll("0"," ");
+                try {
+                    choice = Integer.parseInt(strChoice);
+                    if (choice < 1 || choice > 8){
+                        System.out.println("Invalid choice. Please enter a number between 1 and 7.");
+                        System.out.print("Enter your choice: ");
+                    } else {
+                        validInput = true;
+                        break;
+                    }
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input / There's no input. Please enter a number.");
+                    // scanner.nextLine(); // Clear the invalid input
                     System.out.print("Enter your choice: ");
-                } else {
-                    validInput = true;
                 }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                scanner.nextLine(); // Clear the invalid input
-                System.out.print("Enter your choice: ");
             }
         }
-        scanner.nextLine(); // Clear the newline character
         return choice;
     }
 
     // Method to print the main menu
     private static void printMainMenu() {
-        System.out.println("Welcome to Bingo!");
-        System.out.println("Choose the type of pattern:");
-        System.out.println("1. X Pattern");
-        System.out.println("2. Blackout Pattern");
-        System.out.println("3. Both Diagonal Patterns");
-        System.out.println("4. Four Corners Pattern");
-        System.out.println("5. Horizontal Pattern");
-        System.out.println("6. Vertical Pattern");
-        System.out.println("7. G Pattern");
-        System.out.println("8. Exit");
+
+        String textAscii = """
+
+    ██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗    ████████╗ ██████╗     ██████╗ ██╗███╗   ██╗ ██████╗  ██████╗ ██╗
+    ██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝    ╚══██╔══╝██╔═══██╗    ██╔══██╗██║████╗  ██║██╔════╝ ██╔═══██╗██║
+    ██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗         ██║   ██║   ██║    ██████╔╝██║██╔██╗ ██║██║  ███╗██║   ██║██║
+    ██║███╗██║██╔══╝  ██║     ██║     ██║   ██║██║╚██╔╝██║██╔══╝         ██║   ██║   ██║    ██╔══██╗██║██║╚██╗██║██║   ██║██║   ██║╚═╝
+    ╚███╔███╔╝███████╗███████╗╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗       ██║   ╚██████╔╝    ██████╔╝██║██║ ╚████║╚██████╔╝╚██████╔╝██╗
+    ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝       ╚═╝    ╚═════╝     ╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝  ╚═════╝ ╚═╝
+                                                                                                                                  
+                
+ __| |____________________________________________| |__
+ (__   ____________________________________________   __)
+    | |                                            | |
+    | |        Choose the type of pattern          | |
+    | |        -> 1. X Pattern                     | |
+    | |        -> 2. Blackout Pattern              | |
+    | |        -> 3. Diagonal Patterns             | |
+    | |        -> 4. Four Corners Pattern          | |
+    | |        -> 5. Horizontal Pattern            | |     
+    | |        -> 6. Vertical Pattern              | |
+    | |        -> 7. G Pattern                     | |
+    | |        -> 8. Exit                          | |
+  __| |____________________________________________| |__
+ (__   ____________________________________________   __)
+    | |                                            | |
+ 
+                """;
+        System.out.println(textAscii);
         System.out.print("Enter your choice: ");
     }
 
@@ -122,7 +221,7 @@ public class Main {
                 {false, true, false, true, false},
                 {true, false, false, false, true}
         };
-        return new Patterns("Double Diagonal", diagonalPattern);
+        return new Patterns("X Pattern", diagonalPattern);
     }
 
     // Method to create a blackout pattern
@@ -152,7 +251,7 @@ public class Main {
             for (int i = 0; i < 5; i++) {
                 patternMatrix[row][i] = true;
             }
-            horizontalPatterns[row] = new Patterns("Horizontal Row " + (row + 1), patternMatrix);
+            horizontalPatterns[row] = new Patterns("Horizontal Row ", patternMatrix);
         }
 
         return horizontalPatterns;
@@ -167,7 +266,7 @@ public class Main {
             for (int i = 0; i < 5; i++) {
                 patternMatrix[i][col] = true;
             }
-            verticalPatterns[col] = new Patterns("Vertical Column " + (col + 1), patternMatrix);
+            verticalPatterns[col] = new Patterns("Vertical Column ", patternMatrix);
         }
 
         return verticalPatterns;
@@ -196,20 +295,17 @@ public class Main {
         return new Patterns("G Pattern", gPattern);
     }
 
-    private static void playBingo(Patterns[] patterns, BallsQueue ballsQueue) {
-        BingoCard[] players = new BingoCard[4];
-        List<Integer> losingPlayers = new ArrayList<>(); // Keep track of losing players
-
-        // Initialize players
+    private static void playBingo(Patterns[] patterns, BallsQueue ballsQueue,BingoCard[] players) {
+        List<BingoCard> losingPlayers = new ArrayList<>();
         for (int i = 0; i < players.length; i++) {
-            players[i] = new BingoCard();
+            System.out.println(players[i].getName()+"'s card");
             players[i].printCard();
         }
 
-        int winnerIndex = -1;
+        BingoCard winnerIndex = null;
         Set<String> announcedNumbers = new HashSet<>();
 
-        while (winnerIndex == -1) {
+        while (winnerIndex == null) {
             BingoNumber generatedBall = ballsQueue.dequeue(); // Dequeue the next drawn ball
             System.out.println("\nGenerated Ball: " + generatedBall.getValue());
 
@@ -231,12 +327,12 @@ public class Main {
                     }
 
                     if (players[i].hasBingo(pattern)) {
-                        winnerIndex = i;
+                        winnerIndex = players[i];
                         break;
                     }
                 }
                 // If a winner is found with this pattern, break out of the loop
-                if (winnerIndex != -1) {
+                if (winnerIndex != null) {
                     System.out.println();
                     System.out.println("Pattern: "+pattern.getName());
                     break;
@@ -247,24 +343,54 @@ public class Main {
 
         }
         System.out.println(ballsQueue); // Print the ballsQueue status for demonstration on how the balls queue work
-        System.out.println("\nPlayer " + (winnerIndex + 1) + " wins with BINGO!");
+        System.out.println("\n" + winnerIndex.getName() + " wins with BINGO!");
         System.out.println("\nCard after marking some numbers:");
-
-        players[winnerIndex].printCard();
+        winnerIndex.getName();
+        winnerIndex.printCard();
+        winnerIndex.addWin();
 
         // Print the cards of the other losing players
+
         for (int i = 0; i < players.length; i++) {
-            if (i != winnerIndex) {
-                System.out.println("\nPlayer " + (i + 1) + "'s card:");
+            if (!players[i].getName().equalsIgnoreCase(winnerIndex.getName())) {
+                System.out.println("\n"+ players[i].getName() + "'s card:");
                 players[i].printCard();
-                losingPlayers.add(i + 1); // Add losing player to the list
+                losingPlayers.add(players[i]); // Add losing player to the list
             }
         }
 
 
         // Print losing players
-        System.out.println("\nLosing players: " + losingPlayers);
+        System.out.println("\nLosing players:");
+        for (BingoCard losingPlayer : losingPlayers) {
+            System.out.println(losingPlayer.getName());
+        }
+
+
+        // Print leaderboard
+        printLeaderboard(players);
+
     }
+    public static void printLeaderboard(BingoCard[] players) {
+        // Sort players based on wins
+        Arrays.sort(players, Comparator.comparingInt(BingoCard::getWins).reversed());
+
+        // Print leaderboard
+        System.out.println("Point Leaderboards:");
+        int rank = 1; // Start with rank 1
+        int prevWins = players[0].getWins(); // Initialize with wins of the first player
+        for (int i = 0; i < players.length; i++) {
+            // Check if current player has fewer wins than the previous player
+            if (i > 0 && players[i].getWins() < prevWins) {
+                rank++; // Increment rank
+            }
+            // Update previous wins for next iteration
+            prevWins = players[i].getWins();
+            // Print player information
+            System.out.println("Rank " + rank + ": " + players[i].getName() + " - Wins: " + players[i].getWins());
+        }
+    }
+
 
 
 }

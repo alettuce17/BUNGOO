@@ -6,12 +6,30 @@ import java.util.Random;
 
 public class BingoCard {
     private BingoNumber[][] card;
+    private int wins;
+    private String name;
 
-    public BingoCard() {
+    public BingoCard(String name) {
         this.card = generateCard();
+        this.wins = 0;
+        this.name = name;
+    }
+    public String getName() {
+        return this.name;
+    }
+    public void setCard(BingoNumber[][] newCard) {
+        this.card = newCard;
     }
 
-    private BingoNumber[][] generateCard() {
+    public void addWin() {
+        this.wins++;
+    }
+
+    public int getWins() {
+        return this.wins;
+    }
+
+    public BingoNumber[][] generateCard() {
         BingoNumber[][] card = new BingoNumber[5][5];
         Random random = new Random();
 
@@ -44,8 +62,8 @@ public class BingoCard {
                 }
             }
         }
-
-        return card;
+        this.card = card;
+        return this.card;
     }
 
     // Helper method to generate numbers for a specific column range
