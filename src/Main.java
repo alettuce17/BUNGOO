@@ -1,8 +1,10 @@
-import java.util.*;
+import java.util.Scanner;
+
 
 public class Main {
+    private static Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
         BingoCard[] players = new BingoCard[4];
 
 
@@ -12,6 +14,7 @@ public class Main {
         }
 
         do {
+
             Patterns[] patterns = null;
 
             for (BingoCard player : players) {
@@ -91,7 +94,8 @@ public class Main {
 
             if (choice >= 1 && choice <= 7) { // Play game if choice is valid pattern
                 BallsQueue ballsQueue = new BallsQueue();
-                System.out.println(ballsQueue);
+                ballsQueue.setup();
+
                 playBingo(patterns, ballsQueue,players);
             }
 
@@ -295,8 +299,9 @@ ________________________________________________________________________________
         return new Patterns("G Pattern", gPattern);
     }
 
-    private static void playBingo(Patterns[] patterns, BallsQueue ballsQueue,BingoCard[] players) {
-        List<BingoCard> winningPlayersForPattern = new ArrayList<>(); // Keep track of winning players for this pattern
+    private static void playBingo(Patterns[] patterns, BallsQueue ballsQueue, BingoCard[] players) {
+
+        BingoCard[] winningPlayersForPattern = new BingoCard[players.length]; // Keep track of winning players for this pattern
 
         for (int i = 0; i < players.length; i++) {
             System.out.println(players[i].getName() + "'s card");
@@ -304,26 +309,31 @@ ________________________________________________________________________________
             System.out.println();
         }
 
-
-        Set<String> announcedNumbers = new HashSet<>();
-        Queue<BingoNumber>[] playerQueues = new Queue[players.length];
-        for (int i = 0; i < players.length; i++) {
-            playerQueues[i] = new LinkedList<>();
-        }
+        String[] announcedNumbers = new String[1000]; // Track announced numbers
+        int announcedIndex = 0;
 
         int currentPlayerIndex = 0;
-        while (winningPlayersForPattern.isEmpty()) {
+        while (winningPlayersForPattern[currentPlayerIndex] == null) {
             BingoNumber generatedBall = ballsQueue.dequeue(); // Dequeue the next drawn ball
+            if (winningPlayersFound(winningPlayersForPattern)) {
+                ballsQueue.enqueue(generatedBall); // Add the drawn ball back to the queue
+                break;
+            }
+
+            System.out.println();
+            System.out.println("Please enter to generate a ball");
+            scanner.nextLine();
+
             System.out.println("\n+---------------------------------------+");
             System.out.println("| Player " + (currentPlayerIndex + 1) + "'s Generated Ball: " + generatedBall.getValue() + addSpaces(11 - String.valueOf(generatedBall.getValue()).length()) + "|");
             System.out.println("+---------------------------------------+");
-            playerQueues[currentPlayerIndex].offer(generatedBall);
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
 
             // Check each pattern for bingo
             for (Patterns pattern : patterns) {
 
                 for (int i = 0; i < players.length; i++) {
+
                     boolean hasNumber = players[i].markNumber(generatedBall.getValue());
                     String message;
                     if (hasNumber) {
@@ -332,43 +342,57 @@ ________________________________________________________________________________
                         message = players[i].getName() + " does not have the number " + generatedBall.getValue();
                     }
 
+
                     // Print the message only if it hasn't been announced before
-                    if (!announcedNumbers.contains(message)) {
-                        announcedNumbers.add(message);
+                    if (!containsString(announcedNumbers, message)) {
+                        announcedNumbers[announcedIndex++] = message;
                         System.out.println(message);
                     }
 
                     if (players[i].hasBingo(pattern)) {
-                        winningPlayersForPattern.add(players[i]);
+                        winningPlayersForPattern[i] = players[i];
                     }
+
                 }
 
+                for (BingoCard player : players) {
+                    System.out.println("\n" + player.getName() + "'s card:");
+                    player.printCard();
+                    System.out.println();
+                }
+
+
                 // If there are winning players for this pattern, add them to the winners list
-                if (!winningPlayersForPattern.isEmpty()) {
+                if (winningPlayersFound(winningPlayersForPattern)) {
                     System.out.println();
                     System.out.println("Pattern: " + pattern.getName());
                     for (BingoCard winningPlayer : winningPlayersForPattern) {
-                        System.out.println("Player " + winningPlayer.getName() + " wins with BINGO!");
-                        System.out.println("\n" + winningPlayer.getName() + "'s card:");
-                        winningPlayer.printCard();
-                        winningPlayer.addWin();
+                        if (winningPlayer != null) {
+                            System.out.println("Player " + winningPlayer.getName() + " wins with BINGO!");
+                            System.out.println("\n" + winningPlayer.getName() + "'s card:");
+                            winningPlayer.printCard();
+                            winningPlayer.addWin();
+                            System.out.println();
+                        }
                     }
                     break; // Exit the loop if a winner is found for this pattern
                 }
+
             }
 
+
             ballsQueue.enqueue(generatedBall); // Add the drawn ball back to the queue
+
         }
+
         System.out.println();
-        System.out.println(ballsQueue); // Print the ballsQueue status for demonstration on how the balls queue works
 
-
-// Print losing players
+        // Print losing players
         System.out.println("\n+------------------+");
         System.out.println("| Losing players:  |");
         System.out.println("+------------------+");
         for (BingoCard player : players) {
-            if (!winningPlayersForPattern.contains(player)) {
+            if (!containsBingoCard(winningPlayersForPattern, player)) {
                 System.out.println("| " + player.getName() + addSpaces(16 - player.getName().length()) + " |");
             }
         }
@@ -376,19 +400,54 @@ ________________________________________________________________________________
 
         // Print the cards of the other losing players
         for (BingoCard player : players) {
-            if (!winningPlayersForPattern.contains(player)) {
+            if (!containsBingoCard(winningPlayersForPattern, player)) {
                 System.out.println("\n" + player.getName() + "'s card:");
                 player.printCard();
                 System.out.println();
             }
         }
 
-
         printLeaderboard(players);
     }
+
+    private static boolean containsString(String[] array, String value) {
+        for (String s : array) {
+            if (s != null && s.equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean containsBingoCard(BingoCard[] array, BingoCard value) {
+        for (BingoCard card : array) {
+            if (card != null && card.equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean winningPlayersFound(BingoCard[] array) {
+        for (BingoCard card : array) {
+            if (card != null) {
+                return true;
+            }
+        }
+        return false;
+    }
     public static void printLeaderboard(BingoCard[] players) {
-        // Sort players based on wins
-        Arrays.sort(players, Comparator.comparingInt(BingoCard::getWins).reversed());
+        // Sort players based on wins using bubble sort algorithm
+        for (int i = 0; i < players.length - 1; i++) {
+            for (int j = 0; j < players.length - i - 1; j++) {
+                if (players[j].getWins() < players[j + 1].getWins()) {
+                    // Swap players if they are out of order
+                    BingoCard temp = players[j];
+                    players[j] = players[j + 1];
+                    players[j + 1] = temp;
+                }
+            }
+        }
 
         // Print leaderboard
         System.out.println("Point Leaderboards:");
@@ -405,6 +464,8 @@ ________________________________________________________________________________
             System.out.println("Rank " + rank + ": " + players[i].getName() + " - Wins: " + players[i].getWins());
         }
     }
+
+
     public static String addSpaces(int count) {
         StringBuilder spaces = new StringBuilder();
         for (int i = 0; i < count; i++) {

@@ -1,8 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
-
 
 public class BingoCard {
     private BingoNumber[][] card;
@@ -14,9 +10,11 @@ public class BingoCard {
         this.wins = 0;
         this.name = name;
     }
+
     public String getName() {
         return this.name;
     }
+
     public void setCard(BingoNumber[][] newCard) {
         this.card = newCard;
     }
@@ -34,16 +32,12 @@ public class BingoCard {
         Random random = new Random();
 
         // Generate numbers for each column
-        List<List<Integer>> columnNumbers = new ArrayList<>();
-        columnNumbers.add(generateColumnNumbers(1, 15)); // B column
-        columnNumbers.add(generateColumnNumbers(16, 30)); // I column
-        columnNumbers.add(generateColumnNumbers(31, 45)); // N column
-        columnNumbers.add(generateColumnNumbers(46, 60)); // G column
-        columnNumbers.add(generateColumnNumbers(61, 75)); // O column
-
-        // Shuffle each column separately
-        for (List<Integer> column : columnNumbers) {
-            Collections.shuffle(column);
+        int[][] columnNumbers = new int[5][15];
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 15; j++) {
+                columnNumbers[i][j] = 15 * i + j + 1;
+            }
+            shuffleArray(columnNumbers[i], random);
         }
 
         // Fill the card with numbers from each column
@@ -56,7 +50,7 @@ public class BingoCard {
                     card[row][column].setMarked(true);
                 } else {
                     // Get number from the corresponding column
-                    value = columnNumbers.get(column).get(row);
+                    value = columnNumbers[column][row];
                     card[row][column] = new BingoNumber(value);
 
                 }
@@ -66,15 +60,15 @@ public class BingoCard {
         return this.card;
     }
 
-    // Helper method to generate numbers for a specific column range
-    private List<Integer> generateColumnNumbers(int start, int end) {
-        List<Integer> numbers = new ArrayList<>();
-        for (int i = start; i <= end; i++) {
-            numbers.add(i);
+    private void shuffleArray(int[] array, Random random) {
+        for (int i = array.length - 1; i > 0; i--) {
+            int index = random.nextInt(i + 1);
+            // Swap
+            int temp = array[index];
+            array[index] = array[i];
+            array[i] = temp;
         }
-        return numbers;
     }
-
 
     public boolean markNumber(int value) {
         for (int i = 0; i < 5; i++) {
@@ -99,7 +93,7 @@ public class BingoCard {
     public void printCard() {
         int maxDigits = 0;
         System.out.println("==========================================================================");
-        System.out.println("|  B         | |  I         | |  N         | |  G         | |  O         |");
+        System.out.println("|      B     | |     I      | |      N     | |      G     | |      O     |");
         System.out.println("==========================================================================");
 
         for (BingoNumber[] row : card) {
@@ -114,25 +108,25 @@ public class BingoCard {
             }
         }
 
-        int paddingSize = maxDigits + 4; // +4 for '|' on each side and space
-        String padding = generatePadding(paddingSize - 2); // Internal padding
+        int paddingSize = maxDigits + 4; // side and space
+        String padding = generatePadding(paddingSize - 2);
 
         for (BingoNumber[] row : card) {
             for (BingoNumber element : row) {
-                System.out.print("| "); // Leading pipe and space
+                System.out.print("| ");
                 if (element != null) {
                     int value = element.getValue();
                     if (value == 0) {
-                        System.out.print(" FREE " + generatePadding(paddingSize - 6)); // Adjusted
+                        System.out.print(" FREE " + generatePadding(paddingSize - 6));
                     } else {
                         int digits = (int) Math.log10(value) + 1;
                         int paddingNeeded = maxDigits - digits;
                         System.out.print(String.format("%" + (digits + paddingNeeded) + "s", value) + padding);
                     }
-                    String markPadding = generatePadding(paddingSize - 6); // Adjusted
+                    String markPadding = generatePadding(paddingSize - 6);
                     System.out.print(element.isMarked() ? " (X)" + markPadding : generatePadding(paddingSize - 2));
                 }
-                System.out.print(" | "); // Trailing pipe
+                System.out.print(" | ");
             }
             System.out.println();
         }
@@ -177,7 +171,4 @@ public class BingoCard {
         // If we made it here, the pattern matches
         return true;
     }
-
-
-
 }
